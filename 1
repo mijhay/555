@@ -1,0 +1,30 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IExternalBridge {
+    function deposit(address _receiver, uint256 _amount, bytes memory _externalData) external;
+    function withdraw(address _receiver, uint256 _amount, bytes memory _externalData) external;
+}
+
+contract CrossChainInteroperability {
+    address public externalBridge;
+
+    event Deposit(address indexed receiver, uint256 amount, bytes externalData);
+    event Withdrawal(address indexed receiver, uint256 amount, bytes externalData);
+
+    constructor(address _externalBridge) {
+        externalBridge = _externalBridge;
+    }
+
+    function deposit(uint256 _amount, bytes memory _externalData) external {
+        // Call deposit function of the external bridge
+        IExternalBridge(externalBridge).deposit(msg.sender, _amount, _externalData);
+        emit Deposit(msg.sender, _amount, _externalData);
+    }
+
+    function withdraw(uint256 _amount, bytes memory _externalData) external {
+        // Call withdraw function of the external bridge
+        IExternalBridge(externalBridge).withdraw(msg.sender, _amount, _externalData);
+        emit Withdrawal(msg.sender, _amount, _externalData);
+    }
+}
